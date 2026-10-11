@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "csv-merge-review"
+version = "0.1.0"
+description = "Conservative three-way CSV merge by unique key, with explicit conflict reporting."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "GhosTnever" }]
+classifiers = ["Development Status :: 3 - Alpha", "Environment :: Console", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Topic :: Utilities"]
+dependencies = []
+
+[project.scripts]
+csv-merge-review = "csv_merge_review.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
