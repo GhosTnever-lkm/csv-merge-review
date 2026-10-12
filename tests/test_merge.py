@@ -1,7 +1,9 @@
 from __future__ import annotations
 import os, subprocess, sys, tempfile, unittest
 from pathlib import Path
+import tomllib
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'src'))
+from csv_merge_review import __version__
 from csv_merge_review.core import MergeError, merge_tables, read_csv, render_csv, render_json
 
 class MergeTests(unittest.TestCase):
@@ -51,6 +53,16 @@ class MergeTests(unittest.TestCase):
  def test_conflict_report_never_includes_cell_values(self):
   self.pair('id,name\nprivate-id,secret-base\n','id,name\nprivate-id,secret-ours\n','id,name\nprivate-id,secret-theirs\n')
   report=render_json(self.merge());self.assertIn('private-id',report);self.assertNotIn('secret-',report)
+  self.assertIn('"mergeable_rows": null',report);self.assertNotIn('merged_rows_written',report)
+ def test_malformed_quoted_csv_is_rejected(self):
+  self.pair('id,name\n1,"unfinished\n','id,name\n1,ours\n','id,name\n1,theirs\n')
+  with self.assertRaisesRegex(MergeError,'could not read valid UTF-8 CSV'):
+   self.merge()
+ def test_package_and_project_versions_match(self):
+  project=tomllib.loads((ROOT/'pyproject.toml').read_text(encoding='utf-8'))
+  self.assertEqual(project['project']['version'],__version__)
+  proc=subprocess.run([sys.executable,'-m','csv_merge_review.cli','--version'],cwd=ROOT,env={**os.environ,'PYTHONPATH':str(ROOT/'src')},capture_output=True,text=True)
+  self.assertEqual(proc.returncode,0);self.assertEqual(proc.stdout.strip(),f'csv-merge-review {__version__}')
  def test_cli_never_writes_partial_merge_on_conflict(self):
   self.pair('id,name\n1,base\n','id,name\n1,left\n','id,name\n1,right\n')
   out=self.d/'merged.csv'

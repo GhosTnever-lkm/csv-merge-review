@@ -36,7 +36,9 @@ class MergeResult:
             "summary": {"added": self.added, "removed": self.removed,
                         "auto_merged": self.auto_merged, "conflicts": len(self.conflicts)},
             "conflicts": list(self.conflicts),
-            "merged_rows_written": len(self.rows),
+            # A conflict blocks writing altogether, so never imply that a
+            # complete output file exists in that case.
+            "mergeable_rows": len(self.rows) if not self.conflicts else None,
         }
 
 
@@ -46,7 +48,7 @@ def read_csv(path: str | Path, key_column: str, max_bytes: int = 10 * 1024 * 102
         if source.stat().st_size > max_bytes:
             raise MergeError(f"{source.name}: file exceeds the {max_bytes}-byte limit")
         with source.open("r",encoding="utf-8-sig",newline="") as f:
-            reader=csv.DictReader(f); headers=reader.fieldnames
+            reader=csv.DictReader(f, strict=True); headers=reader.fieldnames
             if not headers: raise MergeError(f"{source.name}: CSV has no header row")
             if any(not h or not h.strip() for h in headers): raise MergeError(f"{source.name}: empty column name")
             if len(headers)!=len(set(headers)): raise MergeError(f"{source.name}: duplicate column names")

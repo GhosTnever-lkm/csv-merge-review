@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "csv-merge-review"
-version = "0.1.1"
+version = "0.1.2"
 description = "Conservative three-way CSV merge by unique key, with explicit conflict reporting."
 readme = "README.md"
 requires-python = ">=3.11"

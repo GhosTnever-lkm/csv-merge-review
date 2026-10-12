@@ -14,6 +14,7 @@ Safely combine two CSV edits against a shared base. **Disjoint field edits merge
 - Refuses to write any merged file if conflicts exist. No “last writer wins” guessing.
 - Preserves baseline row order, appends new rows deterministically, and writes quoted UTF-8 CSV.
 - Produces a JSON summary without cell values; conflicting keys are included to locate rows, so avoid printing reports with sensitive identifiers into public CI logs.
+- In JSON, `mergeable_rows` is `null` whenever any conflict blocks output; it is a row count only for a conflict-free result.
 - Processes local files only; default maximum is 10 MiB per input. The output is written atomically and never overwrites an input.
 
 It treats all cells as text and requires matching column sets. It does not infer types, normalize whitespace, or resolve conflicts for you.
@@ -29,6 +30,12 @@ python -m venv .venv
 # Windows PowerShell: .venv\Scripts\Activate.ps1
 python -m pip install .
 csv-merge-review examples/base.csv examples/ours.csv examples/theirs.csv --key id --output merged.csv
+```
+
+To install a published build, download the wheel and its SHA-256 manifest from the [latest release](https://github.com/GhosTnever-lkm/csv-merge-review/releases/latest):
+
+```bash
+python -m pip install csv_merge_review-0.1.2-py3-none-any.whl
 ```
 
 Write a conflict report to stdout; any conflict exits `1` and no merged file is written:
