@@ -23,4 +23,4 @@ jobs:
       - run: python -m pip install .
       - run: python -m unittest discover -s tests -v
       - name: Smoke-test the installed CLI
-        run: python -c "import csv, pathlib, subprocess, tempfile; d=pathlib.Path(tempfile.mkdtemp()); subprocess.run(['csv-merge-review','examples/base.csv','examples/ours.csv','examples/theirs.csv','--key','id','--output',str(d/'merged.csv')],check=True); assert (d/'merged.csv').is_file(); assert next(csv.reader((d/'merged.csv').open(encoding='utf-8')))==['id','name','score']"
+        run: python -c "import csv, pathlib, subprocess, tempfile; d=pathlib.Path(tempfile.mkdtemp()); subprocess.run(['csv-merge-review','examples/base.csv','examples/ours.csv','examples/theirs.csv','--key','id','--output',str(d/'merged.csv')],check=True); assert (d/'merged.csv').is_file(); assert next(csv.reader((d/'merged.csv').open(encoding='utf-8')))==['id','mod_name','version','description']"
